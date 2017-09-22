@@ -8,6 +8,9 @@ public function applyTroubleTicketPattern() {
   if (ticket.SubType_IFC != null) {
     var pattern = TroubleTicketPatternFactory.getPatternFor(ticket.TicketType, ticket.SubType_IFC, AccountEntitiesZoneFinder.fromTroubleTicket(ticket))
     pattern.applyToTicket(ticket)
+	if(conflict){
+	//test my merge
+	}
   }
 }
 
