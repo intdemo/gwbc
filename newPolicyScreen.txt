@@ -1,0 +1,50 @@
+<Code><![CDATA[uses ifc.troubleticket.patterns.TroubleTicketPatternFactory
+uses ifc.salesagent.SalesAgentSession
+uses java.util.ArrayList
+uses ifc.accounting.AccountEntitiesZoneFinder
+
+public function applyTroubleTicketPattern() {
+  //Intact requirement: need to apply a pattern to the ticket
+  if (ticket.SubType_IFC != null) {
+    var pattern = TroubleTicketPatternFactory.getPatternFor(ticket.TicketType, ticket.SubType_IFC, AccountEntitiesZoneFinder.fromTroubleTicket(ticket))
+    pattern.applyToTicket(ticket)
+  }
+}
+
+public function clearTroubleTicketFields() {
+  ticket.Title = null
+  ticket.DetailedDescription = null
+  ticket.Priority = null
+  ticket.TargetDate = null
+  ticket.EscalationDate = null
+}
+
+//Intact requirement: custom trouble ticket types
+public property get TicketTypes(): java.util.List {
+
+  // Intact req 879
+  if(SalesAgentSession.IsSalesAgentSession) {
+    return typekey.TroubleTicketType.TF_BDICONTEXTTYPESONLY_IFC.TypeKeys
+  }
+  
+  return typekey.TroubleTicketType.TF_MANUALTYPESONLY_IFC.TypeKeys
+}
+
+//Intact requirement: custom trouble ticket types
+public property get TicketSubTypes(): java.util.List {
+
+  // Intact req 879
+  if(SalesAgentSession.IsSalesAgentSession) {
+
+    if(ticket.TicketType == TroubleTicketType.TC_INTERNALREQUEST_IFC) {
+      return typekey.TroubleTicketSubType_IFC.TF_BDICONTEXT_INTERNALREQUEST_IFC.TypeKeys
+    } else if(ticket.TicketType == TroubleTicketType.TC_CUSTOMERREQUEST_IFC) {
+      return typekey.TroubleTicketSubType_IFC.TF_BDICONTEXT_CUSTOMREQUEST_IFC.TypeKeys
+    } else if (ticket.TicketType == TroubleTicketType.TC_PAYMENTSCHEDULE_IFC) {
+      return typekey.TroubleTicketSubType_IFC.TF_BDICONTEXT_PAYMENTSCHEDULE_IFC.TypeKeys
+    }
+    return new ArrayList()
+  }
+
+  return typekey.TroubleTicketSubType_IFC.getTypeKeys(false).where( \ subType -> subType.Categories.contains(ticket.TicketType) && !TroubleTicketSubType_IFC.TF_AUTOMATICONLY.TypeKeys.contains(subType))
+}]]></Code>
