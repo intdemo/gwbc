@@ -8,6 +8,10 @@ public function applyTroubleTicketPattern() {
   if (ticket.SubType_IFC != null) {
     var pattern = TroubleTicketPatternFactory.getPatternFor(ticket.TicketType, ticket.SubType_IFC, AccountEntitiesZoneFinder.fromTroubleTicket(ticket))
     pattern.applyToTicket(ticket)
+	// add some new code
+	if(province == "ontario"){
+	print("hello ontario")
+	}
   }
 }
 
